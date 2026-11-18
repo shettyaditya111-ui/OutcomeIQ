@@ -50,12 +50,16 @@ public class PoAttainmentService {
         List<ProgramOutcome> programOutcomes = poRepository.findAll();
 
         Map<Long, List<Question>> questionsByCO = questions.stream()
-                .filter(q -> q.getCourseOutcome() != null)
+                .filter(q -> q != null
+                        && q.getCourseOutcome() != null
+                        && q.getCourseOutcome().getId() != null)
                 .collect(Collectors.groupingBy(
                         q -> q.getCourseOutcome().getId()));
 
         Map<Long, List<StudentMark>> marksByQuestion = marks.stream()
-                .filter(m -> m.getQuestion() != null)
+                .filter(m -> m != null
+                        && m.getQuestion() != null
+                        && m.getQuestion().getId() != null)
                 .collect(Collectors.groupingBy(
                         m -> m.getQuestion().getId()));
 
@@ -66,25 +70,30 @@ public class PoAttainmentService {
             List<Question> coQuestions = entry.getValue();
 
             double maximumMarks = coQuestions.stream()
-                    .mapToDouble(Question::getMarks)
+                    .mapToDouble(question -> question.getMarks())
                     .sum();
 
             if (maximumMarks <= 0) {
                 continue;
             }
 
-            Long courseId = coQuestions.get(0).getCourse() == null
+            Question firstQuestion = coQuestions.get(0);
+
+            Long courseId = firstQuestion.getCourse() == null
                     ? null
-                    : coQuestions.get(0).getCourse().getId();
+                    : firstQuestion.getCourse().getId();
 
             if (courseId == null) {
                 continue;
             }
 
             Set<Long> courseStudentIds = students.stream()
-                    .filter(s -> s.getCourse() != null
-                            && s.getCourse().getId().equals(courseId))
-                    .map(Student::getId)
+                    .filter(student -> student != null
+                            && student.getId() != null
+                            && student.getCourse() != null
+                            && student.getCourse().getId() != null
+                            && student.getCourse().getId().equals(courseId))
+                    .map(student -> student.getId())
                     .collect(Collectors.toSet());
 
             if (courseStudentIds.isEmpty()) {
@@ -104,9 +113,10 @@ public class PoAttainmentService {
                                     question.getId(), List.of());
 
                     obtained += questionMarks.stream()
-                            .filter(m -> m.getStudent() != null
-                                    && m.getStudent().getId().equals(studentId))
-                            .mapToDouble(StudentMark::getMarksObtained)
+                            .filter(mark -> mark.getStudent() != null
+                                    && mark.getStudent().getId() != null
+                                    && mark.getStudent().getId().equals(studentId))
+                            .mapToDouble(mark -> mark.getMarksObtained())
                             .sum();
                 }
 
@@ -125,10 +135,17 @@ public class PoAttainmentService {
 
         for (ProgramOutcome po : programOutcomes) {
 
+            if (po == null || po.getId() == null) {
+                continue;
+            }
+
             List<CoPoMapping> poMappings = mappings.stream()
-                    .filter(m -> m.getProgramOutcome() != null
-                            && m.getProgramOutcome().getId().equals(po.getId())
-                            && m.getCourseOutcome() != null)
+                    .filter(mapping -> mapping != null
+                            && mapping.getProgramOutcome() != null
+                            && mapping.getProgramOutcome().getId() != null
+                            && mapping.getProgramOutcome().getId().equals(po.getId())
+                            && mapping.getCourseOutcome() != null
+                            && mapping.getCourseOutcome().getId() != null)
                     .toList();
 
             double weightedTotal = 0;

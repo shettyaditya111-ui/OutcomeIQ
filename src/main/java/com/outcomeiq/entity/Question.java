@@ -17,6 +17,10 @@ public class Question {
 
     private int marks;
 
+    private Integer yearUsed;
+
+    private String assessmentType;
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
@@ -51,6 +55,21 @@ public class Question {
 
     public void setMarks(int marks) {
         this.marks = marks;
+    }
+        public Integer getYearUsed() {
+        return yearUsed;
+    }
+
+    public void setYearUsed(Integer yearUsed) {
+        this.yearUsed = yearUsed;
+    }
+
+    public String getAssessmentType() {
+        return assessmentType;
+    }
+
+    public void setAssessmentType(String assessmentType) {
+        this.assessmentType = assessmentType;
     }
 
     public Course getCourse() {
