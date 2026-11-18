@@ -3,29 +3,23 @@ package com.outcomeiq.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.outcomeiq.entity.Course;
-import com.outcomeiq.entity.CourseOutcome;
-import com.outcomeiq.repository.CourseRepository;
-import com.outcomeiq.repository.CourseOutcomeRepository;
+import com.outcomeiq.service.CourseOutcomeService;
 
 @Controller
 public class CourseOutcomeController {
 
-    private final CourseOutcomeRepository coRepo;
-    private final CourseRepository courseRepo;
+    private final CourseOutcomeService coService;
 
-    public CourseOutcomeController(
-            CourseOutcomeRepository coRepo,
-            CourseRepository courseRepo) {
-        this.coRepo = coRepo;
-        this.courseRepo = courseRepo;
+    public CourseOutcomeController(CourseOutcomeService coService) {
+        this.coService = coService;
     }
 
     @GetMapping("/cos")
     public String showCOs(Model model) {
-        model.addAttribute("cos", coRepo.findAll());
-        model.addAttribute("courses", courseRepo.findAll());
+        model.addAttribute("cos", coService.getAllCourseOutcomes());
+        model.addAttribute("courses", coService.getAllCourses());
         return "cos";
     }
 
@@ -33,23 +27,45 @@ public class CourseOutcomeController {
     public String addCO(
             @RequestParam String coCode,
             @RequestParam String description,
-            @RequestParam Long courseId) {
+            @RequestParam Long courseId,
+            RedirectAttributes redirectAttributes) {
 
-        Course course = courseRepo.findById(courseId).orElseThrow();
+        try {
+            coService.addCourseOutcome(coCode, description, courseId);
+            redirectAttributes.addFlashAttribute("successMessage", "Course Outcome added successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error adding CO: " + e.getMessage());
+        }
 
-        CourseOutcome co = new CourseOutcome();
-        co.setCoCode(coCode);
-        co.setDescription(description);
-        co.setCourse(course);
+        return "redirect:/cos";
+    }
 
-        coRepo.save(co);
+    @PostMapping("/updateCO")
+    public String updateCO(
+            @RequestParam Long id,
+            @RequestParam String coCode,
+            @RequestParam String description,
+            @RequestParam Long courseId,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            coService.updateCourseOutcome(id, coCode, description, courseId);
+            redirectAttributes.addFlashAttribute("successMessage", "Course Outcome updated successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error updating CO: " + e.getMessage());
+        }
 
         return "redirect:/cos";
     }
 
     @GetMapping("/deleteCO/{id}")
-    public String deleteCO(@PathVariable Long id) {
-        coRepo.deleteById(id);
+    public String deleteCO(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            coService.deleteCourseOutcome(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Course Outcome deleted successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error deleting CO: " + e.getMessage());
+        }
         return "redirect:/cos";
     }
 }

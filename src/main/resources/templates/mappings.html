@@ -1,55 +1,189 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>CO-PO Mapping</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO-PO Mapping - OutcomeIQ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
-<body class="container mt-5">
-<h2>CO-PO Mapping Management</h2>
-<form action="/addMapping" method="post">
-    <select name="coId" class="form-control mb-2" required>
-        <option value="">Select Course Outcome</option>
-        <option th:each="co : ${cos}"
-                th:value="${co.id}"
-                th:text="${co.coCode}">
-        </option>
-    </select>
-    <select name="poId" class="form-control mb-2" required>
-        <option value="">Select Program Outcome</option>
-        <option th:each="po : ${pos}"
-                th:value="${po.id}"
-                th:text="${po.poCode}">
-        </option>
-    </select>
-    <select name="mappingStrength" class="form-control mb-2" required>
-        <option value="">Select Mapping Strength</option>
-        <option value="1">1 - Low</option>
-        <option value="2">2 - Medium</option>
-        <option value="3">3 - High</option>
-    </select>
-    <button type="submit" class="btn btn-primary">Add Mapping</button>
-</form>
-<hr>
-<h4>CO-PO Mappings</h4>
-<table class="table table-bordered">
-    <tr>
-        <th>ID</th>
-        <th>Course Outcome</th>
-        <th>Program Outcome</th>
-        <th>Mapping Strength</th>
-        <th>Action</th>
-    </tr>
-    <tr th:each="m : ${mappings}">
-        <td th:text="${m.id}"></td>
-        <td th:text="${m.courseOutcome.coCode}"></td>
-        <td th:text="${m.programOutcome.poCode}"></td>
-        <td th:text="${m.mappingStrength}"></td>
-        <td>
-            <a th:href="@{/deleteMapping/{id}(id=${m.id})}"
-               class="btn btn-danger">Delete</a>
-        </td>
-    </tr>
-</table>
-<a href="/" class="btn btn-secondary">Home</a>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+    <h2>CO-PO Mapping Management</h2>
+    <hr>
+
+    <!-- Feedback messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Add Mapping Form -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Add CO-PO Mapping</h5>
+            <form action="/addMapping" method="post" class="row g-2">
+                <div class="col-md-4">
+                    <select name="coId" class="form-select" required>
+                        <option value="">Select Course Outcome</option>
+                        <option th:each="co : ${cos}"
+                                th:value="${co.id}"
+                                th:text="${co.coCode + (co.course != null ? ' - ' + co.course.courseCode : '')}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select name="poId" class="form-select" required>
+                        <option value="">Select Program Outcome</option>
+                        <option th:each="po : ${pos}"
+                                th:value="${po.id}"
+                                th:text="${po.poCode + ' - ' + po.description}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="mappingStrength" class="form-select" required>
+                        <option value="">Select Strength</option>
+                        <option value="1">1 - Low</option>
+                        <option value="2">2 - Medium</option>
+                        <option value="3">3 - High</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mappings List -->
+    <h4>Existing CO-PO Mappings</h4>
+
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th style="width: 8%;">ID</th>
+                <th style="width: 25%;">Course Outcome</th>
+                <th style="width: 35%;">Program Outcome</th>
+                <th style="width: 17%;">Mapping Strength</th>
+                <th style="width: 15%;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="m : ${mappings}">
+                <td th:text="${m.id}"></td>
+                <td>
+                    <strong class="text-primary" th:text="${m.courseOutcome != null ? m.courseOutcome.coCode : '-'}"></strong>
+                    <div class="small text-muted" th:if="${m.courseOutcome != null && m.courseOutcome.course != null}"
+                         th:text="${m.courseOutcome.course.courseCode}"></div>
+                </td>
+                <td>
+                    <strong th:text="${m.programOutcome != null ? m.programOutcome.poCode : '-'}"></strong>
+                    <div class="small text-muted" th:if="${m.programOutcome != null}" th:text="${m.programOutcome.description}"></div>
+                </td>
+                <td>
+                    <span th:if="${m.mappingStrength == 1}" class="badge bg-secondary">1 - Low</span>
+                    <span th:if="${m.mappingStrength == 2}" class="badge bg-info text-dark">2 - Medium</span>
+                    <span th:if="${m.mappingStrength == 3}" class="badge bg-success">3 - High</span>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-warning btn-sm me-1"
+                            data-bs-toggle="modal" data-bs-target="#editMappingModal"
+                            th:data-id="${m.id}"
+                            th:data-co="${m.courseOutcome != null ? m.courseOutcome.id : ''}"
+                            th:data-po="${m.programOutcome != null ? m.programOutcome.id : ''}"
+                            th:data-strength="${m.mappingStrength}">
+                        <i class="bi bi-pencil-square"></i> Edit
+                    </button>
+                    <a th:href="@{/deleteMapping/{id}(id=${m.id})}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Are you sure you want to delete this mapping?');">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${mappings == null or mappings.isEmpty()}">
+                <td colspan="5" class="text-center text-muted py-3">No mappings defined yet.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<!-- Edit Mapping Modal -->
+<div class="modal fade" id="editMappingModal" tabindex="-1" aria-labelledby="editMappingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/updateMapping" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editMappingModalLabel"><i class="bi bi-pencil-square me-1"></i> Edit CO-PO Mapping</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="editMappingId">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Course Outcome</label>
+                        <select name="coId" id="editMappingCoId" class="form-select" required>
+                            <option value="">Select Course Outcome</option>
+                            <option th:each="co : ${cos}"
+                                    th:value="${co.id}"
+                                    th:text="${co.coCode + (co.course != null ? ' - ' + co.course.courseCode : '')}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Program Outcome</label>
+                        <select name="poId" id="editMappingPoId" class="form-select" required>
+                            <option value="">Select Program Outcome</option>
+                            <option th:each="po : ${pos}"
+                                    th:value="${po.id}"
+                                    th:text="${po.poCode + ' - ' + po.description}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mapping Strength</label>
+                        <select name="mappingStrength" id="editMappingStrength" class="form-select" required>
+                            <option value="1">1 - Low Correlation</option>
+                            <option value="2">2 - Medium Correlation</option>
+                            <option value="3">3 - High Correlation</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('editMappingModal');
+        if (modal) {
+            modal.addEventListener('show.bs.modal', function(event) {
+                const btn = event.relatedTarget;
+                document.getElementById('editMappingId').value = btn.getAttribute('data-id');
+                document.getElementById('editMappingCoId').value = btn.getAttribute('data-co');
+                document.getElementById('editMappingPoId').value = btn.getAttribute('data-po');
+                document.getElementById('editMappingStrength').value = btn.getAttribute('data-strength');
+            });
+        }
+    });
+</script>
+
 </body>
 </html>

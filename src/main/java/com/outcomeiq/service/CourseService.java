@@ -40,6 +40,7 @@ public class CourseService {
 
         existingCourse.setCourseCode(updatedCourse.getCourseCode());
         existingCourse.setCourseName(updatedCourse.getCourseName());
+        existingCourse.setSemester(updatedCourse.getSemester());
 
         return courseRepository.save(existingCourse);
     }

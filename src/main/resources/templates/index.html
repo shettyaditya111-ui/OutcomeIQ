@@ -78,6 +78,7 @@
 
 <body>
 
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="container-fluid">
     <div class="row">
@@ -156,6 +157,14 @@
                         <h5>Student Marks</h5>
                         <p>Record and manage marks obtained by students for questions.</p>
                         <a th:href="@{/marks}">Manage Marks →</a>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-xl-4">
+                    <div class="module-card border border-primary-subtle" style="background: linear-gradient(to bottom right, #ffffff, #f0f7ff);">
+                        <h5 class="text-primary"><i class="bi bi-file-earmark-text-fill me-1"></i> Paper Generator</h5>
+                        <p>Generate blueprint-compliant question papers with Bloom & CO balancing.</p>
+                        <a th:href="@{/paper-generator}" class="fw-bold">Create Exam Paper →</a>
                     </div>
                 </div>
 

@@ -3,65 +3,71 @@ package com.outcomeiq.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.outcomeiq.entity.Student;
-import com.outcomeiq.entity.Question;
-import com.outcomeiq.entity.StudentMark;
-
-import com.outcomeiq.repository.StudentRepository;
-import com.outcomeiq.repository.QuestionRepository;
-import com.outcomeiq.repository.StudentMarkRepository;
+import com.outcomeiq.service.StudentMarkService;
 
 @Controller
 public class StudentMarkController {
 
-    private final StudentMarkRepository markRepo;
-    private final StudentRepository studentRepo;
-    private final QuestionRepository questionRepo;
+    private final StudentMarkService markService;
 
-    public StudentMarkController(StudentMarkRepository markRepo,
-                                 StudentRepository studentRepo,
-                                 QuestionRepository questionRepo) {
-        this.markRepo = markRepo;
-        this.studentRepo = studentRepo;
-        this.questionRepo = questionRepo;
+    public StudentMarkController(StudentMarkService markService) {
+        this.markService = markService;
     }
 
     @GetMapping("/marks")
     public String marks(Model model) {
-        model.addAttribute("marks", markRepo.findAll());
-        model.addAttribute("students", studentRepo.findAll());
-        model.addAttribute("questions", questionRepo.findAll());
+        model.addAttribute("marks", markService.getAllMarks());
+        model.addAttribute("students", markService.getAllStudents());
+        model.addAttribute("questions", markService.getAllQuestions());
         return "marks";
     }
 
     @PostMapping("/addMark")
-    public String addMark(@RequestParam Long studentId,
-                          @RequestParam Long questionId,
-                          @RequestParam double marksObtained) {
+    public String addMark(
+            @RequestParam Long studentId,
+            @RequestParam Long questionId,
+            @RequestParam double marksObtained,
+            RedirectAttributes redirectAttributes) {
 
-        Student student = studentRepo.findById(studentId).orElse(null);
-        Question question = questionRepo.findById(questionId).orElse(null);
+        try {
+            markService.addMark(studentId, questionId, marksObtained);
+            redirectAttributes.addFlashAttribute("successMessage", "Marks recorded successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error recording marks: " + e.getMessage());
+        }
 
-        if (student != null && question != null
-                && student.getCourse().getId().equals(question.getCourse().getId())
-                && marksObtained >= 0
-                && marksObtained <= question.getMarks()) {
+        return "redirect:/marks";
+    }
 
-            StudentMark mark = new StudentMark();
-            mark.setStudent(student);
-            mark.setQuestion(question);
-            mark.setMarksObtained(marksObtained);
+    @PostMapping("/updateMark")
+    public String updateMark(
+            @RequestParam Long id,
+            @RequestParam Long studentId,
+            @RequestParam Long questionId,
+            @RequestParam double marksObtained,
+            RedirectAttributes redirectAttributes) {
 
-            markRepo.save(mark);
+        try {
+            markService.updateMark(id, studentId, questionId, marksObtained);
+            redirectAttributes.addFlashAttribute("successMessage", "Marks updated successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error updating marks: " + e.getMessage());
         }
 
         return "redirect:/marks";
     }
 
     @GetMapping("/deleteMark/{id}")
-    public String deleteMark(@PathVariable Long id) {
-        markRepo.deleteById(id);
+    public String deleteMark(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            markService.deleteMark(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Mark record deleted successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error deleting mark: " + e.getMessage());
+        }
+
         return "redirect:/marks";
     }
 }
