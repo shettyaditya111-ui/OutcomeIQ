@@ -1,3 +1,4 @@
+
 package com.outcomeiq.controller;
 
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,25 @@ public class StudentController {
         Course course = courseRepo.findById(courseId).orElse(null);
 
         if (course != null) {
+            student.setCourse(course);
+            studentRepo.save(student);
+        }
+
+        return "redirect:/students";
+    }
+
+    @PostMapping("/updateStudent")
+    public String updateStudent(@RequestParam Long id,
+                                @RequestParam String usn,
+                                @RequestParam String studentName,
+                                @RequestParam Long courseId) {
+
+        Student student = studentRepo.findById(id).orElse(null);
+        Course course = courseRepo.findById(courseId).orElse(null);
+
+        if (student != null && course != null) {
+            student.setUsn(usn);
+            student.setStudentName(studentName);
             student.setCourse(course);
             studentRepo.save(student);
         }

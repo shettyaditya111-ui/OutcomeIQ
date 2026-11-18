@@ -1,62 +1,92 @@
+
 package com.outcomeiq.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.outcomeiq.entity.Question;
-import com.outcomeiq.entity.Course;
-import com.outcomeiq.entity.CourseOutcome;
-import com.outcomeiq.repository.QuestionRepository;
-import com.outcomeiq.repository.CourseRepository;
-import com.outcomeiq.repository.CourseOutcomeRepository;
+import com.outcomeiq.service.QuestionService;
 
 @Controller
 public class QuestionController {
 
-    private final QuestionRepository questionRepo;
-    private final CourseRepository courseRepo;
-    private final CourseOutcomeRepository coRepo;
+    private final QuestionService questionService;
 
-    public QuestionController(QuestionRepository questionRepo,
-                              CourseRepository courseRepo,
-                              CourseOutcomeRepository coRepo) {
-        this.questionRepo = questionRepo;
-        this.courseRepo = courseRepo;
-        this.coRepo = coRepo;
+    public QuestionController(QuestionService questionService) {
+        this.questionService = questionService;
     }
 
     @GetMapping("/questions")
     public String questions(Model model) {
-        model.addAttribute("questions", questionRepo.findAll());
-        model.addAttribute("courses", courseRepo.findAll());
-        model.addAttribute("cos", coRepo.findAll());
+        model.addAttribute("questions", questionService.getAllQuestions());
+        model.addAttribute("courses", questionService.getAllCourses());
+        model.addAttribute("cos", questionService.getAllCourseOutcomes());
+        model.addAttribute("bloomLevels", QuestionService.BLOOM_LEVELS);
         return "questions";
     }
 
     @PostMapping("/addQuestion")
-    public String addQuestion(@ModelAttribute Question question,
-                              @RequestParam Long courseId,
-                              @RequestParam Long coId) {
+    public String addQuestion(
+            @RequestParam String questionText,
+            @RequestParam String bloomLevel,
+            @RequestParam int marks,
+            @RequestParam(required = false) Integer yearUsed,
+            @RequestParam String assessmentType,
+            @RequestParam Long courseId,
+            @RequestParam Long coId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            questionService.addQuestion(
+                    questionText, bloomLevel, marks,
+                    yearUsed, assessmentType, courseId, coId);
 
-        Course course = courseRepo.findById(courseId).orElse(null);
-        CourseOutcome co = coRepo.findById(coId).orElse(null);
-
-        if (course != null && co != null &&
-            co.getCourse().getId().equals(course.getId()) &&
-            question.getMarks() > 0) {
-
-            question.setCourse(course);
-            question.setCourseOutcome(co);
-            questionRepo.save(question);
+            redirectAttributes.addFlashAttribute(
+                    "successMessage", "Question added successfully.");
+        } catch (IllegalArgumentException exception) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage", exception.getMessage());
         }
+        return "redirect:/questions";
+    }
 
+    @PostMapping("/updateQuestion")
+    public String updateQuestion(
+            @RequestParam Long id,
+            @RequestParam String questionText,
+            @RequestParam String bloomLevel,
+            @RequestParam int marks,
+            @RequestParam(required = false) Integer yearUsed,
+            @RequestParam String assessmentType,
+            @RequestParam Long courseId,
+            @RequestParam Long coId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            questionService.updateQuestion(
+                    id, questionText, bloomLevel, marks,
+                    yearUsed, assessmentType, courseId, coId);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage", "Question updated successfully.");
+        } catch (IllegalArgumentException exception) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage", exception.getMessage());
+        }
         return "redirect:/questions";
     }
 
     @GetMapping("/deleteQuestion/{id}")
-    public String deleteQuestion(@PathVariable Long id) {
-        questionRepo.deleteById(id);
+    public String deleteQuestion(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes) {
+        try {
+            questionService.deleteQuestion(id);
+            redirectAttributes.addFlashAttribute(
+                    "successMessage", "Question deleted successfully.");
+        } catch (IllegalArgumentException exception) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage", exception.getMessage());
+        }
         return "redirect:/questions";
     }
 }
