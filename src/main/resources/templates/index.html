@@ -1,77 +1,138 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OutcomeIQ | Dashboard</title>
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.png}">
+    <link rel="shortcut icon" th:href="@{/favicon.ico}">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
-        :root {
-            --primary: #3157a4;
-            --sidebar: #17243b;
-            --background: #f4f6fa;
-            --text: #263449;
+        .dashboard-container {
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 28px 24px 60px 24px;
         }
 
-        body {
-            background: var(--background);
-            color: var(--text);
-            font-family: Arial, sans-serif;
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #1e3a8a 100%);
+            border-radius: 16px;
+            padding: 36px 40px;
+            color: #ffffff;
+            margin-bottom: 32px;
+            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .main-content {
-            padding: 35px;
+        .hero-banner::after {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
         }
 
-        .welcome {
-            background: white;
-            padding: 30px;
+        .hero-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            color: #93c5fd;
+            margin-bottom: 12px;
+        }
+
+        /* Modern Dashboard Cards */
+        .mod-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 14px;
-            margin-bottom: 28px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.04);
-        }
-
-        .module-card {
-            background: white;
-            border: none;
-            border-radius: 12px;
-            padding: 23px;
+            padding: 24px;
             height: 100%;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.04);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .module-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 7px 20px rgba(0,0,0,0.08);
-        }
-
-        .module-card h5 {
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .module-card p {
-            color: #778196;
-            font-size: 14px;
-            min-height: 42px;
-        }
-
-        .module-card a {
-            color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
+            color: inherit;
+            position: relative;
+            cursor: pointer;
         }
 
-        @media (max-width: 767px) {
-            .main-content {
-                padding: 20px;
-            }
+        .mod-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+            border-color: #cbd5e1;
+            color: inherit;
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            margin-bottom: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        .mod-card:hover .icon-box {
+            transform: scale(1.08);
+        }
+
+        .icon-blue { background: #eff6ff; color: #2563eb; }
+        .icon-indigo { background: #eef2ff; color: #4f46e5; }
+        .icon-emerald { background: #ecfdf5; color: #059669; }
+        .icon-amber { background: #fffbeb; color: #d97706; }
+        .icon-purple { background: #faf5ff; color: #7c3aed; }
+        .icon-cyan { background: #ecfeff; color: #0891b2; }
+        .icon-rose { background: #fff1f2; color: #e11d48; }
+        .icon-gradient {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+
+        .mod-card h5 {
+            font-weight: 700;
+            font-size: 1.12rem;
+            color: #0f172a;
+            margin-bottom: 8px;
+            transition: color 0.2s ease;
+        }
+
+        .mod-card:hover h5 {
+            color: #2563eb;
+        }
+
+        .mod-card p {
+            color: #64748b;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+
+        .featured-card {
+            background: linear-gradient(to bottom right, #ffffff, #f0f7ff);
+            border: 1px solid #bfdbfe !important;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
         }
     </style>
 </head>
@@ -80,102 +141,140 @@
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container-fluid">
-    <div class="row">
+<div class="dashboard-container">
 
-        <main class="col-12 main-content">
-
-            <div class="welcome">
-                <h2 class="fw-bold">Welcome to OutcomeIQ</h2>
-                <p class="text-secondary mb-0">
-                    Course Outcome Attainment Automation and
-                    Blueprint-Based Question Paper Generator
+    <!-- Hero Welcome Banner -->
+    <div class="hero-banner">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="hero-pill">
+                    <i class="bi bi-mortarboard-fill"></i>
+                    NMAM Institute of Technology · Nitte
+                </span>
+                <h1 class="fw-bold mb-2 display-6" style="letter-spacing: -0.5px;">OutcomeIQ</h1>
+                <p class="text-white-50 mb-0 fs-6" style="max-width: 650px;">
+                    Course Outcome Attainment Automation & Blueprint-Based Question Paper Generator for Outcome-Based Education (OBE).
                 </p>
             </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h4 class="fw-bold mb-1">Dashboard</h4>
-                    <p class="text-secondary mb-0">
-                        Manage your academic data and assessment activities.
-                    </p>
-                </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a th:href="@{/paper-generator}" class="btn btn-primary px-3 py-2 me-2">
+                    <i class="bi bi-file-earmark-diff me-1"></i> Paper Generator
+                </a>
+                <a th:href="@{/questions}" class="btn btn-outline-light px-3 py-2 border-secondary-subtle">
+                    <i class="bi bi-patch-question me-1"></i> Questions
+                </a>
             </div>
-
-            <div class="row g-4">
-
-                <div class="col-sm-6 col-xl-4">
-                    <div class="module-card">
-                        <h5>Courses</h5>
-                        <p>Create and manage courses and their academic details.</p>
-                        <a th:href="@{/courses}">Manage Courses →</a>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xl-4">
-                    <div class="module-card">
-                        <h5>Course Outcomes</h5>
-                        <p>Define and maintain the outcomes associated with each course.</p>
-                        <a th:href="@{/cos}">Manage COs →</a>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xl-4">
-                    <div class="module-card">
-                        <h5>Program Outcomes</h5>
-                        <p>Maintain program-level outcomes for attainment analysis.</p>
-                        <a th:href="@{/pos}">Manage POs →</a>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xl-4">
-                    <div class="module-card">
-                        <h5>CO-PO Mapping</h5>
-                        <p>Define the relationship and mapping strength between COs and POs.</p>
-                        <a th:href="@{/mappings}">Manage Mappings →</a>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xl-4">
-                    <div class="module-card">
-                        <h5>Question Bank</h5>
-                        <p>Store questions and associate them with course outcomes.</p>
-                        <a th:href="@{/questions}">Manage Questions →</a>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xl-4">
-                    <div class="module-card">
-                        <h5>Students</h5>
-                        <p>Maintain student records for course assessment.</p>
-                        <a th:href="@{/students}">Manage Students →</a>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xl-4">
-                    <div class="module-card">
-                        <h5>Student Marks</h5>
-                        <p>Record and manage marks obtained by students for questions.</p>
-                        <a th:href="@{/marks}">Manage Marks →</a>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xl-4">
-                    <div class="module-card border border-primary-subtle" style="background: linear-gradient(to bottom right, #ffffff, #f0f7ff);">
-                        <h5 class="text-primary"><i class="bi bi-file-earmark-text-fill me-1"></i> Paper Generator</h5>
-                        <p>Generate blueprint-compliant question papers with Bloom & CO balancing.</p>
-                        <a th:href="@{/paper-generator}" class="fw-bold">Create Exam Paper →</a>
-                    </div>
-                </div>
-
-            </div>
-
-            <footer class="text-center text-secondary mt-5 small">
-                OutcomeIQ · Course Outcome Attainment System
-            </footer>
-
-        </main>
+        </div>
     </div>
+
+    <!-- Section Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1" style="letter-spacing: -0.3px;">Academic Modules</h4>
+            <p class="text-secondary small mb-0">
+                Configure curriculum, manage assessment data, and monitor outcome attainment.
+            </p>
+        </div>
+    </div>
+
+    <!-- Module Cards Grid -->
+    <div class="row g-4">
+
+        <!-- 1. Courses -->
+        <div class="col-sm-6 col-lg-3">
+            <a th:href="@{/courses}" class="mod-card">
+                <div class="icon-box icon-blue">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                </div>
+                <h5>Courses</h5>
+                <p>Create and maintain course catalogs, syllabus codes, and semesters.</p>
+            </a>
+        </div>
+
+        <!-- 2. Course Outcomes -->
+        <div class="col-sm-6 col-lg-3">
+            <a th:href="@{/cos}" class="mod-card">
+                <div class="icon-box icon-indigo">
+                    <i class="bi bi-bullseye"></i>
+                </div>
+                <h5>Course Outcomes</h5>
+                <p>Define measurable skills and competencies expected per course.</p>
+            </a>
+        </div>
+
+        <!-- 3. Program Outcomes -->
+        <div class="col-sm-6 col-lg-3">
+            <a th:href="@{/pos}" class="mod-card">
+                <div class="icon-box icon-emerald">
+                    <i class="bi bi-award-fill"></i>
+                </div>
+                <h5>Program Outcomes</h5>
+                <p>Maintain NBA graduate attributes and program-level benchmarks.</p>
+            </a>
+        </div>
+
+        <!-- 4. CO-PO Mapping -->
+        <div class="col-sm-6 col-lg-3">
+            <a th:href="@{/mappings}" class="mod-card">
+                <div class="icon-box icon-amber">
+                    <i class="bi bi-diagram-3-fill"></i>
+                </div>
+                <h5>CO-PO Mapping</h5>
+                <p>Map correlation strength (1-Low, 2-Med, 3-High) between COs and POs.</p>
+            </a>
+        </div>
+
+        <!-- 5. Question Bank -->
+        <div class="col-sm-6 col-lg-3">
+            <a th:href="@{/questions}" class="mod-card">
+                <div class="icon-box icon-purple">
+                    <i class="bi bi-patch-question-fill"></i>
+                </div>
+                <h5>Question Bank</h5>
+                <p>Catalog questions tagged with Bloom's Taxonomy, marks, and COs.</p>
+            </a>
+        </div>
+
+        <!-- 6. Students -->
+        <div class="col-sm-6 col-lg-3">
+            <a th:href="@{/students}" class="mod-card">
+                <div class="icon-box icon-cyan">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <h5>Students</h5>
+                <p>Maintain registered student rosters and course enrollments.</p>
+            </a>
+        </div>
+
+        <!-- 7. Student Marks -->
+        <div class="col-sm-6 col-lg-3">
+            <a th:href="@{/marks}" class="mod-card">
+                <div class="icon-box icon-rose">
+                    <i class="bi bi-card-checklist"></i>
+                </div>
+                <h5>Student Marks</h5>
+                <p>Record assessment marks scored by students on questions.</p>
+            </a>
+        </div>
+
+        <!-- 8. Paper Generator -->
+        <div class="col-sm-6 col-lg-3">
+            <a th:href="@{/paper-generator}" class="mod-card featured-card">
+                <div class="icon-box icon-gradient">
+                    <i class="bi bi-file-earmark-diff-fill"></i>
+                </div>
+                <h5>Paper Generator</h5>
+                <p>Auto-generate blueprint-compliant exam papers with Bloom & CO balancing.</p>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-secondary mt-5 pt-4 border-top small">
+        OutcomeIQ · Department of Computer Science & Engineering · NMAM Institute of Technology (Nitte)
+    </footer>
+
 </div>
 
 </body>

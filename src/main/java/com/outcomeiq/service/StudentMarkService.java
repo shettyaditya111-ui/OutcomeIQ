@@ -1,7 +1,7 @@
-
 package com.outcomeiq.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +57,22 @@ public class StudentMarkService {
         return questionRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public Optional<StudentMark> findMarkByStudentAndQuestion(Long studentId, Long questionId) {
+        if (studentId == null || questionId == null) {
+            return Optional.empty();
+        }
+        return markRepository.findByStudent_IdAndQuestion_Id(studentId, questionId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsMark(Long studentId, Long questionId) {
+        if (studentId == null || questionId == null) {
+            return false;
+        }
+        return markRepository.existsByStudent_IdAndQuestion_Id(studentId, questionId);
+    }
+
     public StudentMark addMark(
             Long studentId,
             Long questionId,
@@ -67,13 +83,37 @@ public class StudentMarkService {
 
         validateMarks(marksObtained, question);
 
-        if (markRepository.existsByStudent_IdAndQuestion_Id(
-                studentId, questionId)) {
+        if (markRepository.existsByStudent_IdAndQuestion_Id(studentId, questionId)) {
             throw new IllegalArgumentException(
                     "Marks have already been recorded for this student and question.");
         }
 
         StudentMark mark = new StudentMark();
+        mark.setStudent(student);
+        mark.setQuestion(question);
+        mark.setMarksObtained(marksObtained);
+
+        return markRepository.save(mark);
+    }
+
+    public StudentMark saveOrUpdateMark(
+            Long studentId,
+            Long questionId,
+            double marksObtained) {
+
+        Student student = validateAndGetStudent(studentId);
+        Question question = validateAndGetQuestion(questionId);
+
+        validateMarks(marksObtained, question);
+
+        StudentMark mark = markRepository.findByStudent_IdAndQuestion_Id(studentId, questionId)
+                .orElseGet(() -> {
+                    StudentMark newMark = new StudentMark();
+                    newMark.setStudent(student);
+                    newMark.setQuestion(question);
+                    return newMark;
+                });
+
         mark.setStudent(student);
         mark.setQuestion(question);
         mark.setMarksObtained(marksObtained);
@@ -144,6 +184,11 @@ public class StudentMarkService {
         if (!Double.isFinite(marksObtained) || marksObtained < 0) {
             throw new IllegalArgumentException(
                     "Marks must be a valid non-negative number.");
+        }
+
+        if (marksObtained > question.getMarks()) {
+            throw new IllegalArgumentException(
+                    "Marks obtained (" + marksObtained + ") cannot exceed maximum marks (" + question.getMarks() + ").");
         }
 
         if (question.getCourse() == null

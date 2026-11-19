@@ -7,6 +7,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.outcomeiq.service.StudentMarkService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 public class StudentMarkController {
 
@@ -32,10 +35,15 @@ public class StudentMarkController {
             RedirectAttributes redirectAttributes) {
 
         try {
-            markService.addMark(studentId, questionId, marksObtained);
-            redirectAttributes.addFlashAttribute("successMessage", "Marks recorded successfully.");
+            boolean wasExisting = markService.existsMark(studentId, questionId);
+            markService.saveOrUpdateMark(studentId, questionId, marksObtained);
+            if (wasExisting) {
+                redirectAttributes.addFlashAttribute("successMessage", "Existing mark record was successfully updated.");
+            } else {
+                redirectAttributes.addFlashAttribute("successMessage", "Marks recorded successfully.");
+            }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error recording marks: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
 
         return "redirect:/marks";
@@ -53,7 +61,7 @@ public class StudentMarkController {
             markService.updateMark(id, studentId, questionId, marksObtained);
             redirectAttributes.addFlashAttribute("successMessage", "Marks updated successfully.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error updating marks: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
 
         return "redirect:/marks";
@@ -69,5 +77,24 @@ public class StudentMarkController {
         }
 
         return "redirect:/marks";
+    }
+
+    @GetMapping("/api/marks/lookup")
+    @ResponseBody
+    public Map<String, Object> lookupMark(
+            @RequestParam Long studentId,
+            @RequestParam Long questionId) {
+
+        Map<String, Object> response = new HashMap<>();
+        markService.findMarkByStudentAndQuestion(studentId, questionId).ifPresentOrElse(
+                m -> {
+                    response.put("found", true);
+                    response.put("id", m.getId());
+                    response.put("marksObtained", m.getMarksObtained());
+                    response.put("maxMarks", m.getQuestion() != null ? m.getQuestion().getMarks() : null);
+                },
+                () -> response.put("found", false)
+        );
+        return response;
     }
 }

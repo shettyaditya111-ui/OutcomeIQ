@@ -1,90 +1,148 @@
 <div th:fragment="navbar" xmlns:th="http://www.thymeleaf.org">
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
         :root {
-            --oiq-primary: #3157a4;
-            --oiq-sidebar: #17243b;
-            --oiq-hover: rgba(255, 255, 255, 0.08);
-            --oiq-active: #2b498a;
+            --oiq-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --oiq-primary: #2563eb;
+            --oiq-primary-hover: #1d4ed8;
+            --oiq-primary-soft: #eff6ff;
+            --oiq-dark: #0f172a;
+            --oiq-slate: #1e293b;
+            --oiq-body-bg: #f8fafc;
+            --oiq-card-border: #e2e8f0;
+            --oiq-text-muted: #64748b;
         }
 
+        body {
+            font-family: var(--oiq-font) !important;
+            background-color: var(--oiq-body-bg) !important;
+            color: #0f172a !important;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Top Navbar */
         .oiq-navbar {
-            background-color: var(--oiq-sidebar);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-            padding: 0.65rem 1.25rem;
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.12);
+            padding: 0.75rem 1.5rem;
         }
 
         .oiq-hamburger-btn {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #ffffff;
-            font-size: 1.35rem;
-            line-height: 1;
-            padding: 0.35rem 0.65rem;
-            border-radius: 6px;
+            font-size: 1.25rem;
+            padding: 0.4rem 0.7rem;
+            border-radius: 8px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease-in-out;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
         }
 
-        .oiq-hamburger-btn:hover,
-        .oiq-hamburger-btn:focus {
-            background-color: rgba(255, 255, 255, 0.15);
-            border-color: #ffffff;
+        .oiq-hamburger-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.35);
             color: #ffffff;
-            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.2);
+            transform: scale(1.04);
         }
 
         .oiq-brand {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 0.3px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
             color: #ffffff !important;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
+        }
+
+        .oiq-brand-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+            font-size: 1.1rem;
         }
 
         .oiq-brand .brand-badge {
-            font-size: 0.65rem;
+            font-size: 0.68rem;
             letter-spacing: 0.5px;
-            font-weight: 600;
-            background: var(--oiq-primary);
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 4px;
+            font-weight: 700;
+            background: rgba(59, 130, 246, 0.25);
+            color: #93c5fd;
+            border: 1px solid rgba(147, 197, 253, 0.25);
+            padding: 3px 8px;
+            border-radius: 6px;
             text-transform: uppercase;
         }
 
-        /* Offcanvas Drawer Styling */
+        .oiq-inst-divider {
+            width: 1px;
+            height: 26px;
+            background-color: rgba(255, 255, 255, 0.2);
+            margin: 0 1rem;
+        }
+
+        .oiq-inst-logo-pill {
+            background: #ffffff;
+            padding: 3px 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .oiq-inst-logo {
+            height: 25px;
+            width: auto;
+            max-width: 200px;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* Offcanvas Sidebar */
         .oiq-offcanvas {
-            background-color: var(--oiq-sidebar);
+            background-color: #0f172a !important;
             color: #f1f5f9;
-            width: 290px !important;
+            width: 300px !important;
             border-right: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
         }
 
         .oiq-offcanvas .offcanvas-header {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1.15rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1.25rem 1.4rem;
         }
 
         .oiq-offcanvas .nav-link {
-            color: #cbd5e1;
-            padding: 0.75rem 1rem;
+            color: #94a3b8;
+            padding: 0.7rem 0.95rem;
             border-radius: 8px;
             margin-bottom: 0.25rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.8rem;
             font-weight: 500;
-            font-size: 0.95rem;
-            transition: all 0.15s ease-in-out;
+            font-size: 0.92rem;
+            transition: all 0.18s ease-in-out;
             text-decoration: none;
         }
 
@@ -92,23 +150,25 @@
             font-size: 1.15rem;
             width: 22px;
             text-align: center;
-            color: #94a3b8;
-            transition: color 0.15s ease;
+            color: #64748b;
+            transition: color 0.18s ease;
         }
 
         .oiq-offcanvas .nav-link:hover {
             color: #ffffff;
-            background-color: var(--oiq-hover);
+            background-color: rgba(255, 255, 255, 0.06);
+            transform: translateX(3px);
         }
 
         .oiq-offcanvas .nav-link:hover i {
-            color: #ffffff;
+            color: #60a5fa;
         }
 
         .oiq-offcanvas .nav-link.active {
             color: #ffffff;
-            background-color: var(--oiq-primary);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             font-weight: 600;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
         }
 
         .oiq-offcanvas .nav-link.active i {
@@ -119,11 +179,99 @@
             font-size: 0.72rem;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            color: #64748b;
+            color: #475569;
             font-weight: 700;
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-            padding-left: 0.5rem;
+            margin-top: 1.15rem;
+            margin-bottom: 0.45rem;
+            padding-left: 0.6rem;
+        }
+
+        /* Global Clean Component Styling */
+        .card {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            padding: 0.55rem 0.85rem;
+            font-size: 0.92rem;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border: none;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .table thead th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .table tbody td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.92rem;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .modal-content {
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 1.4rem;
+        }
+
+        .modal-footer {
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 0.85rem 1.4rem;
         }
     </style>
 
@@ -144,22 +292,17 @@
 
                 <!-- Brand -->
                 <a class="oiq-brand" th:href="@{/}">
-                    <i class="bi bi-mortarboard-fill text-primary-emphasis"></i>
+                    <span class="oiq-brand-icon">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </span>
                     <span>OutcomeIQ</span>
-                    <span class="brand-badge">Academic Attainment</span>
                 </a>
-            </div>
 
-            <!-- Quick Right Actions -->
-            <div class="d-flex align-items-center gap-2">
-                <a th:href="@{/paper-generator}" class="btn btn-sm btn-outline-info d-none d-md-inline-flex align-items-center gap-1">
-                    <i class="bi bi-file-earmark-text"></i>
-                    <span>Paper Generator</span>
-                </a>
-                <a th:href="@{/}" class="btn btn-sm btn-outline-light d-none d-sm-inline-flex align-items-center gap-1">
-                    <i class="bi bi-speedometer2"></i>
-                    <span>Dashboard</span>
-                </a>
+                <!-- Institution Logo -->
+                <div class="oiq-inst-divider d-none d-md-inline-block"></div>
+                <div class="oiq-inst-logo-pill d-none d-md-inline-flex align-items-center">
+                    <img th:src="@{/images/nmamit-logo.png}" alt="NMAMIT Logo" class="oiq-inst-logo">
+                </div>
             </div>
         </div>
     </nav>
@@ -171,10 +314,13 @@
          aria-labelledby="outcomeIqSidebarLabel">
         <div class="offcanvas-header">
             <div>
-                <h5 class="offcanvas-title fw-bold text-white mb-0" id="outcomeIqSidebarLabel">
-                    <i class="bi bi-mortarboard-fill text-info me-1"></i> OutcomeIQ
-                </h5>
-                <small class="text-secondary" style="font-size: 0.78rem;">Attainment & Assessment System</small>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="oiq-brand-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </span>
+                    <h5 class="offcanvas-title fw-bold text-white mb-0" id="outcomeIqSidebarLabel">OutcomeIQ</h5>
+                </div>
+                <small class="text-secondary" style="font-size: 0.74rem;">NMAM Institute of Technology</small>
             </div>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -189,7 +335,7 @@
 
                 <div class="oiq-section-title">Academic Structure</div>
                 <a class="nav-link" th:href="@{/courses}" data-page="/courses">
-                    <i class="bi bi-book"></i>
+                    <i class="bi bi-journal-bookmark-fill"></i>
                     <span>Courses</span>
                 </a>
                 <a class="nav-link" th:href="@{/cos}" data-page="/cos">
@@ -197,21 +343,21 @@
                     <span>Course Outcomes (CO)</span>
                 </a>
                 <a class="nav-link" th:href="@{/pos}" data-page="/pos">
-                    <i class="bi bi-award"></i>
+                    <i class="bi bi-award-fill"></i>
                     <span>Program Outcomes (PO)</span>
                 </a>
                 <a class="nav-link" th:href="@{/mappings}" data-page="/mappings">
-                    <i class="bi bi-diagram-3"></i>
+                    <i class="bi bi-diagram-3-fill"></i>
                     <span>CO-PO Mapping</span>
                 </a>
 
                 <div class="oiq-section-title">Assessments & Marks</div>
                 <a class="nav-link" th:href="@{/questions}" data-page="/questions">
-                    <i class="bi bi-question-circle"></i>
+                    <i class="bi bi-patch-question-fill"></i>
                     <span>Question Bank</span>
                 </a>
                 <a class="nav-link" th:href="@{/students}" data-page="/students">
-                    <i class="bi bi-people"></i>
+                    <i class="bi bi-people-fill"></i>
                     <span>Students</span>
                 </a>
                 <a class="nav-link" th:href="@{/marks}" data-page="/marks">
@@ -219,15 +365,15 @@
                     <span>Student Marks</span>
                 </a>
 
-                <div class="oiq-section-title">Exam Tools</div>
+                <div class="oiq-section-title">Examination Tools</div>
                 <a class="nav-link" th:href="@{/paper-generator}" data-page="/paper-generator">
-                    <i class="bi bi-file-earmark-text"></i>
+                    <i class="bi bi-file-earmark-diff-fill"></i>
                     <span>Paper Generator</span>
                 </a>
             </nav>
 
             <div class="pt-3 border-top border-secondary text-center text-secondary small" style="font-size: 0.75rem;">
-                OutcomeIQ v0.0.1
+                OutcomeIQ · NMAMIT CSE
             </div>
         </div>
     </div>
@@ -239,7 +385,6 @@
     <script>
         (function() {
             var currentPath = window.location.pathname;
-            // Clean trailing slash for matching if needed (except root)
             var links = document.querySelectorAll('#oiqNavList .nav-link');
             links.forEach(function(link) {
                 var page = link.getAttribute('data-page');
@@ -254,4 +399,3 @@
         })();
     </script>
 </div>
-
